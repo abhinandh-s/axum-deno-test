@@ -1,22 +1,16 @@
 [package]
-name = "my-website"
+name = "abhinandhs_deno_dev"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 web-sys = "0.3.70"
-yew = { version = "0.21.0", features = ["csr"] }
-yew-router = "0.18.0"
+yew = { version = "0.22.0", features = ["csr"] }
+yew-router = "0.19.0"
 serde = { version = "1.0", features = ["derive"] }
 
 [profile.release]
-# less code to include into binary
 panic = 'abort'
-# optimization over all codebase ( better optimization, slower build )
 codegen-units = 1
-# optimization for size ( more aggressive )
 opt-level = 'z'
-# optimization for size
-# opt-level = 's'
-# link time optimization using using whole-program analysis
 lto = true
