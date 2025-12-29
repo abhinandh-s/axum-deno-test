@@ -1,5 +1,5 @@
-use my_website::switch;
-use my_website::Route;
+use abhinandhs_deno_dev::switch;
+use abhinandhs_deno_dev::Route;
 use yew::prelude::*;
 use yew_router::prelude::*;
 

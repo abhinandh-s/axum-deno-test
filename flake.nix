@@ -1,34 +1,46 @@
 {
-  description = "A devShell example";
+  description = "A basic Rust devshell for NixOS users developing Leptos";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.05";
-    unstable-nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     rust-overlay.url = "github:oxalica/rust-overlay";
-    flake-utils.url  = "github:numtide/flake-utils";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, unstable-nixpkgs, rust-overlay, flake-utils, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      nixpkgs,
+      rust-overlay,
+      flake-utils,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
-        manifest = (pkgs.lib.importTOML ./Cargo.toml).package;
-        overlays = [
-          (import rust-overlay)
-          (final: prev: {
-            unstable = import unstable-nixpkgs {
-              inherit system;
-              config.allowUnfree = true;
-            };
-          })
-        ];
+        overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs {
           inherit system overlays;
         };
       in
-        {
-        devShells.default = import ./shell.nix { inherit pkgs; };
-        # ${manifest.name} = pkgs.callPackage ./nix/default.nix { };
-        # default = pkgs.callPackage ./nix/default.nix { };
+      with pkgs;
+      {
+        devShells.default = mkShell {
+          buildInputs =
+            [
+              (rust-bin.selectLatestNightlyWith (
+                toolchain:
+                toolchain.default.override {
+                  extensions = [
+                    "rust-src"
+                    "rust-analyzer"
+                  ];
+                  targets = [ "wasm32-unknown-unknown" ];
+                }
+              ))
+            ];
+
+          shellHook = '''';
+        };
       }
     );
 }
