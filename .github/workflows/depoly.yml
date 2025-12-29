@@ -24,16 +24,16 @@ jobs:
           override: true
           target: wasm32-unknown-unknown
 
-      - name: Install Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
+      # - name: Install Deno
+      #  uses: denoland/setup-deno@v2
+      #  with:
+      #    deno-version: v2.x
 
-      - name: Install trunk
-        run: "cargo install --locked trunk"
+      # - name: Install trunk
+      #  run: "cargo install --locked trunk"
       
-      - name: trunk build
-        run: "trunk build"
+      # - name: trunk build
+      #  run: "trunk build"
       
       # - name: Build step
       #  run: "deno task build"
