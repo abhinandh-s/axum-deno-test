@@ -7,7 +7,7 @@ use yew_router::prelude::*;
 pub fn portfolio_page() -> Html {
     html!(
                             <>
-                            <div class="bg-blur">
+                        <div class="bg-blur">
                             <PfHeader />
     <TestContent />
 
