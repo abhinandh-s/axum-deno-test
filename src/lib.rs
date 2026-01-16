@@ -1,11 +1,16 @@
+use askama::Template;
 use axum::{
-    response::Html,
+    extract::{Path, Query},
+    http::StatusCode,
+    response::{Html, IntoResponse, Redirect, Response},
     routing::get,
     Router,
 };
-use askama::Template; // This provides the .render() method
 use axum_js_fetch::App;
+use serde::Deserialize;
 use wasm_bindgen::prelude::*;
+
+// --- Entry Point for Deno ---
 
 #[wasm_bindgen]
 pub struct MyApp(App);
@@ -14,9 +19,11 @@ pub struct MyApp(App);
 impl MyApp {
     #[wasm_bindgen]
     pub fn new() -> Self {
-        // We define the router inside new()
         let app = Router::new()
-            .route("/", get(show_post));
+            .route("/", get(start_handler))
+            .route("/{lang}/index.html", get(index_handler))
+            .route("/{lang}/greet-me.html", get(greeting_handler));
+        
         Self(App::new(app))
     }
 
@@ -26,22 +33,104 @@ impl MyApp {
     }
 }
 
-#[derive(Template)]
-#[template(path = "post.html")]
-struct PostTemplate {
-    title: String,
-    date: String,
-    content: String,
+// --- Logic & Types ---
+
+#[derive(Default, Debug, Clone, Copy, PartialEq, Deserialize, strum::Display)]
+#[allow(non_camel_case_types)]
+enum Lang {
+    #[default]
+    en,
+    de,
+    fr,
 }
 
-async fn show_post() -> impl axum::response::IntoResponse {
-    let template = PostTemplate { /* ... */ };
+#[derive(Debug, thiserror::Error)]
+enum AppError {
+    #[error("Not Found")]
+    NotFound,
+    #[error("Render Error")]
+    Render(#[from] askama::Error),
+}
 
-    match template.render() {
-        Ok(html) => axum::response::Html(html).into_response(),
-        Err(_) => (
-            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-            "Template Error",
-        ).into_response(),
+impl IntoResponse for AppError {
+    fn into_response(self) -> Response {
+        #[derive(Template)]
+        #[template(path = "error.html")]
+        struct ErrorTmpl {
+            lang: Lang,
+            message: String,
+        }
+
+        let status = match &self {
+            AppError::NotFound => StatusCode::NOT_FOUND,
+            AppError::Render(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        };
+
+        let tmpl = ErrorTmpl {
+            lang: Lang::default(),
+            message: self.to_string(),
+        };
+
+        match tmpl.render() {
+            Ok(html) => (status, Html(html)).into_response(),
+            Err(_) => (status, "Critical Rendering Failure").into_response(),
+        }
     }
+}
+
+// --- Handlers ---
+
+async fn start_handler() -> Redirect {
+    Redirect::temporary("/en/index.html")
+}
+
+#[derive(Debug, Deserialize)]
+struct IndexHandlerQuery {
+    #[serde(default)]
+    name: String,
+}
+
+async fn index_handler(
+    Path((lang,)): Path<(Lang,)>,
+    Query(query): Query<IndexHandlerQuery>,
+) -> Result<impl IntoResponse, AppError> {
+    #[derive(Template)]
+    #[template(path = "index.html")]
+    struct IndexTmpl {
+        lang: Lang,
+        name: String,
+    }
+
+    let template = IndexTmpl {
+        lang,
+        name: query.name,
+    };
+
+    let html = template.render()?;
+    Ok(Html(html))
+}
+
+#[derive(Debug, Deserialize)]
+struct GreetingHandlerQuery {
+    name: String,
+}
+
+async fn greeting_handler(
+    Path((lang,)): Path<(Lang,)>,
+    Query(query): Query<GreetingHandlerQuery>,
+) -> Result<impl IntoResponse, AppError> {
+    #[derive(Template)]
+    #[template(path = "greet.html")]
+    struct GreetTmpl {
+        lang: Lang,
+        name: String,
+    }
+
+    let template = GreetTmpl {
+        lang,
+        name: query.name,
+    };
+
+    let html = template.render()?;
+    Ok(Html(html))
 }
