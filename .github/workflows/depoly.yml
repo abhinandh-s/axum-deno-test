@@ -39,12 +39,12 @@ jobs:
       - name: Build step
         run: "deno task build"
 
-      - name: update tailwindcss
-        uses: ZoeyVid/tailwindcss-update@main
-        with:
-          input: assets/input.css
-          output: static/style.css
-          params: "--minify"
+      - name: Build Tailwind CSS
+        run: |
+          npx tailwindcss \
+            -i ./assets/input.css \
+            -o ./static/style.css \
+            --minify
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
