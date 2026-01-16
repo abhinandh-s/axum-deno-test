@@ -14,4 +14,6 @@ start:
   deno run --allow-net --allow-read run.ts
   
 build:
+  wasm-pack build --target web
+build_release:
   wasm-pack build --target web --release
