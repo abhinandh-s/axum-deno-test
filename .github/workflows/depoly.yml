@@ -58,6 +58,7 @@ jobs:
         run: |
           tree -L 4
           wc -l static/style.css
+          cat assets/input.css
           cat static/style.css
 
       - name: Upload to Deno Deploy
