@@ -10,18 +10,23 @@ crate-type = ["cdylib"]
 [dependencies]
 # Core template engine
 askama = "0.15"
-# Axum 0.7 for the web logic (minimized for Wasm)
+# Axum 0.7 
 axum = { version = "0.7", default-features = false, features = ["macros"] }
-# The bridge between Axum and JavaScript Fetch API (Deno/Workers)
-axum-js-fetch = { git = "https://github.com/seanaye/axum-js-fetch" }
-# Utilities for path and query parsing
-serde = { version = "1.0", features = ["derive"] }
-# Wasm bindings
+# The Wasm bridge
+axum-js-fetch = { git = "https://github.com/seanaye/ax_js_fetch" }
+
+# --- THE MISSING PIECES ---
+# Required for web-sys::Request and Response
+web-sys = { version = "0.3.69", features = ["Request", "Response"] }
+# Required for async fn in #[wasm_bindgen]
+wasm-bindgen-futures = "0.4.42"
+# --------------------------
+
 wasm-bindgen = "0.2.92"
-# Error handling and string utilities
+serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0"
 strum = { version = "0.26", features = ["derive"] }
 
 [profile.release]
-opt-level = "z" # Optimize for size (critical for Wasm)
+opt-level = "z"
 lto = true
