@@ -10,6 +10,8 @@
    "tasks": {
     "start": "deno run --allow-net --allow-read run.ts",
     "build": "wasm-pack build --target web --release"
+ "build:css": "deno run -A npm:tailwindcss -i ./assets/input.css -o ./static/style.css --minify",
+    "watch:css": "deno run -A npm:tailwindcss -i ./assets/input.css -o ./static/style.css --watch"
   }
 
 }
