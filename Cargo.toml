@@ -13,7 +13,7 @@ askama = "0.15"
 # Axum 0.7 
 axum = { version = "0.7", default-features = false, features = ["macros"] }
 # The Wasm bridge
-axum-js-fetch = { git = "https://github.com/seanaye/axum_js_fetch" }
+axum-js-fetch = { git = "https://github.com/seanaye/axum-js-fetch" }
 
 # --- THE MISSING PIECES ---
 # Required for web-sys::Request and Response
