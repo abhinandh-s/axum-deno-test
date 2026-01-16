@@ -19,6 +19,8 @@ impl MyApp {
         Self(App::new(app))
     }
 
+    /// This function handles the bridge between Deno/JS and Axum.
+    /// wasm_bindgen_futures (added to Cargo.toml) makes this 'async' possible.
     #[wasm_bindgen]
     pub async fn serve(&self, req: web_sys::Request) -> web_sys::Response {
         self.0.oneshot(req).await
@@ -40,13 +42,11 @@ async fn show_post() -> impl IntoResponse {
         content: "This is rendered via Askama 0.15 in Wasm!".into(),
     };
 
-    // In Askama 0.15, we call .render() and wrap the result 
-    // in axum::response::Html manually.
     match blog.render() {
         Ok(html) => Html(html).into_response(),
         Err(e) => (
             axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Render Error: {}", e),
+            format!("Template Render Error: {}", e),
         ).into_response(),
     }
 }
