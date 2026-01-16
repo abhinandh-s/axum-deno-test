@@ -55,7 +55,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y tree
 
       - name: Show repo structure
-        run: tree -L 4
+        run: |
+          tree -L 4
+          wc -l static/style.css
+          cat static/style.css
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
