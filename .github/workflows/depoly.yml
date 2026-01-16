@@ -39,20 +39,17 @@ jobs:
       - name: Build step
         run: "deno task build"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install Tailwind CSS
-        run: npm install -D tailwindcss
+      - name: Download Tailwind CSS CLI
+        run: |
+          curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64
+         chmod +x tailwindcss-linux-x64
 
       - name: Build Tailwind CSS
         run: |
-          npx tailwindcss \
-             -i ./assets/input.css \
-             -o ./static/style.css \
-             --minify
+          ./tailwindcss-linux-x64 \
+            -i ./assets/input.css \
+            -o ./static/style.css \
+            --minify
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
