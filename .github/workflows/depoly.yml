@@ -32,7 +32,10 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.4.0
         with:
           version: 'latest'
-      
+
+      - name: Build CSS with Deno
+        run: deno task build:css
+
       - name: Build step
         run: "deno task build"
 
