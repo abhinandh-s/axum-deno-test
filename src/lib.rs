@@ -4,6 +4,7 @@ use axum::{
     routing::get,
     Router,
 };
+use askama::Template;
 use axum_js_fetch::App;
 use futures_lite::{stream, Stream};
 use serde::Deserialize;
@@ -19,7 +20,7 @@ impl MyApp {
     pub fn new() -> Self {
         let app = Router::new()
             .route("/", get(show_post));
-        Self(ax_js::new(app))
+        Self(App::new(app))
     }
 
     #[wasm_bindgen]
