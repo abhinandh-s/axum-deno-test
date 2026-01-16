@@ -51,6 +51,12 @@ jobs:
             -o ./static/style.css \
             --minify
 
+      - name: Install tree
+        run: sudo apt-get update && sudo apt-get install -y tree
+
+      - name: Show repo structure
+        run: tree -L 4
+
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
