@@ -34,16 +34,14 @@ struct PostTemplate {
     content: String,
 }
 
-async fn show_post() -> Html<String> {
-    let blog = PostTemplate {
-        title: "Fast Rust Blog".into(),
-        date: "2024-05-20".into(),
-        content: "This is rendered via Askama in Wasm!".into(),
-    };
+async fn show_post() -> impl axum::response::IntoResponse {
+    let template = PostTemplate { /* ... */ };
 
-    // Askama's .render() returns a Result<String, askama::Error>
-    match blog.render() {
-        Ok(html) => Html(html),
-        Err(e) => Html(format!("<h1>Render Error</h1><p>{}</p>", e)),
+    match template.render() {
+        Ok(html) => axum::response::Html(html).into_response(),
+        Err(_) => (
+            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+            "Template Error",
+        ).into_response(),
     }
 }
