@@ -13,20 +13,13 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub struct MyApp(App);
 
-impl Default for MyApp {
-    fn default() -> Self {
-        let app = Router::new()
-            .route("/", get(handler).post(handler2))
-            .route("/stream", get(handler3));
-        Self(App::new(app))
-    }
-}
-
 #[wasm_bindgen]
 impl MyApp {
     #[wasm_bindgen]
     pub fn new() -> Self {
-        Self::default()
+        let app = Router::new()
+            .route("/", get(show_post));
+        Self(ax_js::new(app))
     }
 
     #[wasm_bindgen]
@@ -55,4 +48,25 @@ async fn handler3() -> Body {
     let chunks : Vec<Result<&'static str, Infallible>> = vec![Ok("Hello,"), Ok(" "), Ok("world!")];
     let stream = stream::iter(chunks);
     Body::from_stream(stream)
+}
+// -- new 
+//
+#[derive(Template)]
+#[template(path = "post.html")]
+struct PostTemplate {
+    title: String,
+    content: String,
+}
+
+async fn show_post() -> Html<String> {
+    let blog = PostTemplate {
+        title: "Fast Rust Blog".into(),
+        content: "This is rendered via Askama in Wasm!".into(),
+    };
+
+    // .render() generates the string, Html() sets the Content-Type
+    match blog.render() {
+        Ok(html) => Html(html),
+        Err(_) => Html("<h1>Error rendering template</h1>".to_string()),
+    }
 }

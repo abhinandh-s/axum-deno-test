@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 [features]
 
 [dependencies]
-askama = { version = "0.15" }
+askama = { version = "0.15", default-features = false, features = ["derive"] }
 axum-js-fetch = { git = "https://github.com/seanaye/axum-js-fetch" }
 axum = { version = "0.8.8", default-features = false, features = ["json", "query"] }
 futures-lite = "2.2.0"
