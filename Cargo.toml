@@ -10,10 +10,10 @@ crate-type = ["cdylib"]
 [features]
 
 [dependencies]
-wasm-bindgen = "0.2.87"
+wasm-bindgen = "0.2.108"
 axum-js-fetch = { git = "https://github.com/seanaye/axum-js-fetch" }
 axum = { version = "0.8.8", default-features = false, features = ["json", "query"] }
-serde = { version = "1", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
 web-sys = "0.3.67"
 futures-lite = "2.2.0"
 wasm-bindgen-futures = { version = "0.4.40", features = ["futures-core-03-stream"] }
