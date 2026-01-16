@@ -40,7 +40,7 @@ jobs:
         uses: ZoeyVid/tailwindcss-update@main
         with:
           input: assets/input.css
-          output: pkg/static/style.css
+          output: static/style.css
           params: "--minify"
 
       - name: Upload to Deno Deploy
