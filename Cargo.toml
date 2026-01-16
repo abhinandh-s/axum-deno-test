@@ -10,8 +10,8 @@ crate-type = ["cdylib"]
 [features]
 
 [dependencies]
-# Use 0.12 for better compatibility with Axum 0.7
-askama = { version = "0.12", features = ["with-axum"] } 
+askama = "0.15"
+askama_web = { version = "0.14", features = ["axum-0.7"] }
 axum = { version = "0.7", default-features = false, features = ["macros"] }
 axum-js-fetch = { git = "https://github.com/seanaye/axum-js-fetch" }
 futures-lite = "2.3.0"
