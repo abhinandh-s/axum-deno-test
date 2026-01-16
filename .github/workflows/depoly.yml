@@ -33,8 +33,12 @@ jobs:
         with:
           version: 'latest'
 
-      - name: Build CSS with Deno
-        run: deno task build:css
+      - name: update tailwindcss
+        uses: ZoeyVid/tailwindcss-update@main
+        with:
+          input: assets/input.css
+          output: static/style.css
+          params: "--minify"
 
       - name: Build step
         run: "deno task build"
