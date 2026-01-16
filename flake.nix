@@ -1,4 +1,5 @@
 
+
 {
   description = "Rust + wasm32 devshell using oxalica/rust-overlay";
 
@@ -19,6 +20,8 @@
           name = "rust-wasm-devshell";
 
           buildInputs = [
+            pkgs.deno
+            pkgs.wasm-pack
             # Rust nightly pinned using selectLatestNightlyWith (reliable)
             (pkgs.rust-bin.selectLatestNightlyWith (toolchain: toolchain.default.override {
               extensions = [ "rust-src" "rust-analyzer" ];
@@ -30,6 +33,7 @@
             echo "Welcome to Rust + wasm32 devshell"
             rustc --version
             cargo --version
+            fish
           '';
         };
       }

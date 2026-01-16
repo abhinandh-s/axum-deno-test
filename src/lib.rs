@@ -1,74 +1,58 @@
-use yew::prelude::*;
-use yew_router::prelude::*;
+use axum::{
+    body::Body,
+    extract::{Json, Query},
+    routing::get,
+    Router,
+};
+use axum_js_fetch::App;
+use futures_lite::{stream, Stream};
+use serde::Deserialize;
+use std::{collections::HashMap, convert::Infallible};
+use wasm_bindgen::prelude::*;
 
-// home, Portfolio, articles, contact
-#[derive(Clone, Routable, PartialEq)]
-pub enum Route {
-    #[at("/")]
-    Home,
-    #[at("/Portfolio")]
-    Portfolio,
-    #[at("/contact")]
-    Contact,
-    #[at("/articles")]
-    ArticlesRoute,
-    #[at("/articles/*")]
-    Articles,
-    #[not_found]
-    #[at("/404")]
-    NotFound,
-}
+#[wasm_bindgen]
+pub struct MyApp(App);
 
-#[derive(Clone, Routable, PartialEq)]
-pub enum ArticlesRoute {
-    #[at("/articles/test")]
-    Test,
-    #[at("/articles/post/:id")]
-    Post { id: String },
-    #[at("/articles")]
-    Articles,
-    #[at("/articles/yew-website")]
-    YewWebsite,
-    #[at("/articles/yew-rust")]
-    YewRust,
-    #[at("/articles/art_gallary")]
-    ArtGallary,
-    #[not_found]
-    #[at("/articles/404")]
-    NotFound,
-}
-mod components;
-
-use crate::components::art::art_gallary::ArtGallary;
-use crate::components::articles::yew_rust::YewRust;
-use crate::components::articles_page;
-use crate::components::contact_page;
-use crate::components::home_page;
-use crate::components::nav_test;
-use crate::components::portfolio_page;
-use crate::components::yew_website;
-
-pub fn switch(routes: Route) -> Html {
-    match routes {
-        Route::Home => html! { <home_page::HomePage /> },
-        Route::Portfolio => html! { <portfolio_page::Portfolio /> },
-        Route::Contact => html! { <contact_page::Contact /> },
-        Route::ArticlesRoute | Route::Articles => {
-            html! { <Switch<ArticlesRoute> render={switch_settings} /> }
-        }
-        Route::NotFound => {
-            html! { <> <h1>{ "404, Page not found." }</h1><p>{ "Well, we got a problem here :(" }</p> </> }
-        }
+impl Default for MyApp {
+    fn default() -> Self {
+        let app = Router::new()
+            .route("/", get(handler).post(handler2))
+            .route("/stream", get(handler3));
+        Self(App::new(app))
     }
 }
-fn switch_settings(route: ArticlesRoute) -> Html {
-    match route {
-        ArticlesRoute::Post { id } => html! {<p>{format!("You are looking at Post {}", id)}</p>},
-        ArticlesRoute::YewWebsite => html! {<yew_website::YewWebsite />},
-        ArticlesRoute::YewRust => html! {<YewRust />},
-        ArticlesRoute::Test => html! {<nav_test::Portfolio />},
-        ArticlesRoute::ArtGallary => html! {<ArtGallary />},
-        ArticlesRoute::Articles => html! {<articles_page::Articles />},
-        ArticlesRoute::NotFound => html! {<Redirect<Route> to={Route::NotFound}/>},
+
+#[wasm_bindgen]
+impl MyApp {
+    #[wasm_bindgen]
+    pub fn new() -> Self {
+        Self::default()
     }
+
+    #[wasm_bindgen]
+    pub async fn serve(&self, req: web_sys::Request) -> web_sys::Response {
+        self.0.oneshot(req).await
+    }
+}
+
+async fn handler(Query(params): Query<HashMap<String, String>>) -> String {
+    format!("received query string: {:?}", params)
+}
+
+#[derive(Debug, Deserialize)]
+struct TestStruct {
+    hello: String,
+}
+
+async fn handler2(
+    Json(payload): Json<TestStruct>,
+) -> Body {
+    let stream: futures_lite::stream::Repeat<Result<String, Infallible>> = stream::repeat(Ok(payload.hello));
+    Body::from_stream(stream)
+}
+
+async fn handler3() -> Body {
+    let chunks : Vec<Result<&'static str, Infallible>> = vec![Ok("Hello,"), Ok(" "), Ok("world!")];
+    let stream = stream::iter(chunks);
+    Body::from_stream(stream)
 }
