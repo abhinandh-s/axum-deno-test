@@ -17,6 +17,9 @@ jobs:
       - name: 📦 Checkout repository
         uses: actions/checkout@v4
 
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
       - name: 🦀 Set up Rust and wasm32 target
         uses: actions-rs/toolchain@v1
         with:
