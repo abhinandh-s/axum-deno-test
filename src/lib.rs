@@ -2,11 +2,13 @@ use axum::{
     body::Body,
     extract::{Json, Query},
     routing::get,
+    response::Html, // Added this
     Router,
 };
-use askama::Template;
+// You must import the trait for .render() to work!
+use askama::Template; 
 use axum_js_fetch::App;
-use futures_lite::{stream, Stream};
+use futures_lite::{stream};
 use serde::Deserialize;
 use std::{collections::HashMap, convert::Infallible};
 use wasm_bindgen::prelude::*;
@@ -29,45 +31,24 @@ impl MyApp {
     }
 }
 
-async fn handler(Query(params): Query<HashMap<String, String>>) -> String {
-    format!("received query string: {:?}", params)
-}
-
-#[derive(Debug, Deserialize)]
-struct TestStruct {
-    hello: String,
-}
-
-async fn handler2(
-    Json(payload): Json<TestStruct>,
-) -> Body {
-    let stream: futures_lite::stream::Repeat<Result<String, Infallible>> = stream::repeat(Ok(payload.hello));
-    Body::from_stream(stream)
-}
-
-async fn handler3() -> Body {
-    let chunks : Vec<Result<&'static str, Infallible>> = vec![Ok("Hello,"), Ok(" "), Ok("world!")];
-    let stream = stream::iter(chunks);
-    Body::from_stream(stream)
-}
-// -- new 
-//
+// Your template struct must match the variables in your HTML
 #[derive(Template)]
 #[template(path = "post.html")]
 struct PostTemplate {
     title: String,
+    date: String,    // Added this because your HTML uses {{ date }}
     content: String,
 }
 
 async fn show_post() -> Html<String> {
     let blog = PostTemplate {
         title: "Fast Rust Blog".into(),
+        date: "2024-05-20".into(), // Added data here
         content: "This is rendered via Askama in Wasm!".into(),
     };
 
-    // .render() generates the string, Html() sets the Content-Type
     match blog.render() {
         Ok(html) => Html(html),
-        Err(_) => Html("<h1>Error rendering template</h1>".to_string()),
+        Err(e) => Html(format!("<h1>Render Error</h1><p>{}</p>", e)),
     }
 }
