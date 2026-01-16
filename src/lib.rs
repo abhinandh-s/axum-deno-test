@@ -1,16 +1,10 @@
 use axum::{
-    body::Body,
-    extract::{Json, Query},
+    response::Html,
     routing::get,
-    response::Html, // Added this
     Router,
 };
-// You must import the trait for .render() to work!
-use askama::Template; 
+use askama::Template; // This provides the .render() method
 use axum_js_fetch::App;
-use futures_lite::{stream};
-use serde::Deserialize;
-use std::{collections::HashMap, convert::Infallible};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -20,6 +14,7 @@ pub struct MyApp(App);
 impl MyApp {
     #[wasm_bindgen]
     pub fn new() -> Self {
+        // We define the router inside new()
         let app = Router::new()
             .route("/", get(show_post));
         Self(App::new(app))
@@ -31,22 +26,22 @@ impl MyApp {
     }
 }
 
-// Your template struct must match the variables in your HTML
 #[derive(Template)]
 #[template(path = "post.html")]
 struct PostTemplate {
     title: String,
-    date: String,    // Added this because your HTML uses {{ date }}
+    date: String,
     content: String,
 }
 
 async fn show_post() -> Html<String> {
     let blog = PostTemplate {
         title: "Fast Rust Blog".into(),
-        date: "2024-05-20".into(), // Added data here
+        date: "2024-05-20".into(),
         content: "This is rendered via Askama in Wasm!".into(),
     };
 
+    // Askama's .render() returns a Result<String, askama::Error>
     match blog.render() {
         Ok(html) => Html(html),
         Err(e) => Html(format!("<h1>Render Error</h1><p>{}</p>", e)),
