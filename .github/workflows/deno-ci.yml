@@ -25,8 +25,8 @@ jobs:
           deno-version: v2.x
 
           # Step 3: Cache dependencies
-      - name: Update Dependencies
-        run: deno cache --reload main.ts
+      # - name: Update Dependencies
+       # run: deno cache --reload main.ts
 
         # Step 4: Run Linter
      # - name: Lint Code
