@@ -12,8 +12,13 @@ askama = "0.15"
 axum = { version = "0.8", default-features = false, features = ["macros"] }
 axum-js-fetch = { git = "https://github.com/seanaye/axum-js-fetch" }
 web-sys = { version = "0.3.69", features = ["Request", "Response"] }
-# wasm-bindgen-futures = "0.4.42"
+wasm-bindgen-futures = "0.4.42"
 wasm-bindgen = "0.2.92"
+serde = { version = "1.0", features = ["derive"]}
+chrono = "0.4"
+gray_matter = "0.3.2"
+walkdir = "2.5.0"
+comrak = "0.49"
 # serde = { version = "1.0", features = ["derive"] }
 # thiserror = "1.0"
 # strum = { version = "0.26", features = ["derive"] }

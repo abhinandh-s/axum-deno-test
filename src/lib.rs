@@ -1,26 +1,33 @@
+use askama::Template;
 use axum::{
+    Router,
     response::{Html, IntoResponse},
     routing::get,
-    Router,
 };
-use askama::Template; 
 use axum_js_fetch::App;
 use wasm_bindgen::prelude::*;
 
+mod post;
+
 #[wasm_bindgen]
 pub struct MyApp(App);
+
+impl Default for MyApp {
+    fn default() -> Self {
+        let app = Router::new().route("/", get(show_post));
+        Self(App::new(app))
+    }
+}
 
 #[wasm_bindgen]
 impl MyApp {
     #[wasm_bindgen]
     pub fn new() -> Self {
-        let app = Router::new()
-            .route("/", get(show_post));
-        Self(App::new(app))
+        Self::default()
     }
 
     /// This function handles the bridge between Deno/JS and Axum.
-    /// wasm_bindgen_futures (added to Cargo.toml) makes this 'async' possible.
+    /// [`wasm_bindgen_futures`] makes this 'async' possible.
     #[wasm_bindgen]
     pub async fn serve(&self, req: web_sys::Request) -> web_sys::Response {
         self.0.oneshot(req).await
@@ -47,6 +54,7 @@ async fn show_post() -> impl IntoResponse {
         Err(e) => (
             axum::http::StatusCode::INTERNAL_SERVER_ERROR,
             format!("Template Render Error: {}", e),
-        ).into_response(),
+        )
+            .into_response(),
     }
 }
