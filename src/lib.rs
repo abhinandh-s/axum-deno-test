@@ -43,11 +43,19 @@ struct PostTemplate {
 }
 
 async fn show_post() -> impl IntoResponse {
-    let blog = PostTemplate {
+    let mut blog = PostTemplate {
         title: "Fast Rust Blog".into(),
         date: "2026-01-16".into(),
         content: "This is rendered via Askama 0.15 in Wasm!".into(),
     };
+    let articles = post::get_all_articles_sorted();
+    if let Some(f) = articles.first() {
+        blog = PostTemplate {
+            title: f.matter.title.clone(),
+            date: f.matter.published_at.clone(),
+            content: f.content.clone(),
+        }
+    }
 
     match blog.render() {
         Ok(html) => Html(html).into_response(),

@@ -1,3 +1,6 @@
+#![allow(unused)]
+
+use gray_matter::Matter;
 use serde::{Deserialize, Serialize};
 use comrak::plugins::syntect::SyntectAdapterBuilder;
 
@@ -8,7 +11,7 @@ pub struct Article {
     pub content: String,
 }
 
-pub const ARTICLES: &[(&str, &str)] = &[
+const ARTICLES: &[(&str, &str)] = &[
    ("age-nvim", include_str!("../articles/published/age-nvim.md")),
    ("hello-world", include_str!("../articles/published/hello-world.md")),
    ("how-to-set-up-godaddy-domain-with-github-pages", include_str!("../articles/published/how-to-set-up-godaddy-domain-with-github-pages.md")),
@@ -26,12 +29,12 @@ pub struct FrontMatter {
     pub tags: Option<Vec<String>>,
 }
 
-pub fn get_all_articles() -> Vec<Article> {
+fn get_all_articles() -> Vec<Article> {
     let mut articles = Vec::new();
     let mut dbg = String::new();
 
     for (id, ctx) in ARTICLES.to_owned() {
-        let matter = gray_matter::Matter::<gray_matter::engine::YAML>::new();
+        let matter = Matter::<gray_matter::engine::YAML>::new();
         match matter.parse::<FrontMatter>(ctx) {
             Ok(result) => {
                 articles.push(Article {
@@ -59,7 +62,7 @@ pub fn get_all_articles_sorted() -> Vec<Article> {
 }
 
 // For home page
-pub fn get_recently_add(limit: usize) -> Vec<Article> {
+fn get_recently_add(limit: usize) -> Vec<Article> {
     get_all_articles_sorted()
         .into_iter()
         .take(limit)
@@ -68,7 +71,7 @@ pub fn get_recently_add(limit: usize) -> Vec<Article> {
 
 // input: `2026-01-12 21:34`
 // return it as [`Monday, November 25, 2024`]
-pub fn get_date(input: &str, long: bool) -> String {
+fn get_date(input: &str, long: bool) -> String {
     // 1. Parse the input string based on its format
     // %Y-%m-%d %H:%M matches "YYYY-MM-DD HH:MM"
     match chrono::NaiveDate::parse_from_str(input, "%Y-%m-%d") {
@@ -85,7 +88,7 @@ pub fn get_date(input: &str, long: bool) -> String {
     }
 }
 
-pub fn get_article_by_id(id: &str) -> Option<Article> {
+fn get_article_by_id(id: &str) -> Option<Article> {
     get_all_articles().into_iter().find(|f| f.id == id)
 }
 
