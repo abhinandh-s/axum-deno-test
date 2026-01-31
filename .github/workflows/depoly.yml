@@ -64,6 +64,6 @@ jobs:
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: "abhinandhs"
+          project: "abhi"
           entrypoint: "run.ts"
           root: "."
