@@ -1,17 +1,16 @@
 {
-  "deploy": {
-    "project": "43da0eca-04fe-4e8c-8714-85e8032aa987",
-    "exclude": [
-      "**/node_modules"
-    ],
-    "include": [],
-    "entrypoint": "main.ts"
-  }
-   "tasks": {
-    "start": "deno run --allow-net --allow-read run.ts",
-    "build": "wasm-pack build --target web --release"
- "build:css": "deno run -A npm:tailwindcss -i ./assets/input.css -o ./static/style.css --minify",
-    "watch:css": "deno run -A npm:tailwindcss -i ./assets/input.css -o ./static/style.css --watch"
-  }
-
+    "deploy": {
+        "project": "43da0eca-04fe-4e8c-8714-85e8032aa987",
+        "exclude": [
+            "**/node_modules"
+        ],
+        "include": [],
+        "entrypoint": "main.ts"
+    }
+    "tasks": {
+        "start": "deno run --allow-net --allow-read run.ts",
+        "build": "wasm-pack build --target web --release",
+        "build:css": "deno run -A npm:tailwindcss -i ./assets/input.css -o ./static/style.css --minify",
+        "watch:css": "deno run -A npm:tailwindcss -i ./assets/input.css -o ./static/style.css --watch"
+    }
 }
