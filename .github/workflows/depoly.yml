@@ -47,7 +47,7 @@ jobs:
       - name: Build Tailwind CSS
         run: |
           ./tailwindcss-linux-x64 \
-            -i ./assets/input.css \
+            -i ./static/input.css \
             -o ./static/style.css \
             --minify
 
@@ -58,7 +58,7 @@ jobs:
         run: |
           tree -L 4
           wc -l static/style.css
-          cat assets/input.css
+          cat static/input.css
           cat static/style.css
 
       - name: Upload to Deno Deploy
