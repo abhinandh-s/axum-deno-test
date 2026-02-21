@@ -65,5 +65,5 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "axum-deno"
-          entrypoint: "run.ts"
+          entrypoint: "main.ts"
           root: "."
